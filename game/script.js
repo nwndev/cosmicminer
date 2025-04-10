@@ -767,6 +767,32 @@ function soundMine() {
     }, 3000);
   }
 
+  // Delete progress functionality
+  document.getElementById('delete-progress')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Delete progress link clicked');
+    const modal = document.getElementById('delete-modal');
+    modal.classList.add('show');
+    console.log('Modal should be visible now');
+  });
+
+  // Delete modal handlers
+  document.getElementById('confirm-delete')?.addEventListener('click', function() {
+    localStorage.clear();
+    location.reload();
+  });
+
+  document.getElementById('cancel-delete')?.addEventListener('click', function() {
+    document.getElementById('delete-modal').classList.remove('show');
+  });
+
+  document.getElementById('delete-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+    }
+  });
+
   // Initialize the game when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
     handleSplashScreen();

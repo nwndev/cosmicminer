@@ -46,13 +46,13 @@
     }
 
     /* Modal styles */
-    #about-modal, #credits-modal {
+    #about-modal, #credits-modal, #delete-modal {
       backdrop-filter: blur(10px);
       transition: opacity 0.3s ease;
       z-index: 1000;
     }
     
-    #about-modal.show, #credits-modal.show {
+    #about-modal.show, #credits-modal.show, #delete-modal.show {
       opacity: 1;
       pointer-events: auto;
     }
@@ -89,8 +89,24 @@
 
   <!-- Main Content (initially hidden) -->
   <div id="main-content" class="container mx-auto px-4 py-8 hidden">
-    <!-- About Modal -->
-    <div id="about-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+  <!-- Delete Progress Modal -->
+  <div id="delete-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-blue-900 rounded-lg p-6 shadow-lg max-w-md w-full">
+      <h2 class="text-yellow-300 font-bold mb-4">Delete Progress</h2>
+      <p class="text-2l mb-4">Are you sure you want to delete all game progress? This cannot be undone.</p>
+      <div class="flex gap-4">
+        <button id="confirm-delete" class="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-colors">
+          <i class="fas fa-trash-alt mr-2"></i> Delete
+        </button>
+        <button id="cancel-delete" class="flex-1 py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-lg transition-colors">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="bg-blue-900 rounded-lg p-6 shadow-lg max-w-md w-full">
         <h2 class="text-yellow-300 font-bold mb-4">About</h2>
         <p class="text-2l">Cosmic Miner is an idle-clicker game where you collect resources and upgrade your equipment to mine more efficiently. Simple as that. Purely created with only HTML, JavaScript and Tailwind CSS.</p>
@@ -116,6 +132,8 @@
       <a href="#about" class="hover:text-yellow-300 transition-colors">about <i class="fas fa-info-circle ml-1"></i></a>
       <span class="text-blue-400">•</span>
       <a href="#credits" class="hover:text-yellow-300 transition-colors">credits <i class="fas fa-heart ml-1"></i></a>
+      <span class="text-blue-400">•</span>
+      <a href="#delete" id="delete-progress" class="hover:text-yellow-300 transition-colors">delete progress <i class="fas fa-trash-alt ml-1"></i></a>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
