@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMIC MINER - Download</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        body {
+      background: linear-gradient(rgba(10, 15, 51, 0.9), rgba(10, 15, 51, 0.9)), 
+                  url('https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg') no-repeat center;
+      background-size: cover;
+      min-height: 100vh;
+    }
+    </style>
+</head>
+<body class="text-yellow-200 font-mono min-h-screen flex flex-col items-center justify-center p-4" style="background-attachment: fixed;">
+    <div class="text-center max-w-md w-full">
+        <!-- Logo -->
+        <div class="mb-12">
+            <img src="/assets/logo.png" alt="COSMIC MINER" class="max-h-48 w-auto mx-auto animate-pulse" style="max-width: min(80vw, 400px); height: auto;">
+        </div>
+
+        <!-- Download Button -->
+        <a href="/assets/logo.png" download id="download-btn" class="block w-full bg-blue-900 hover:bg-blue-800 text-yellow-200 font-bold py-4 px-6 rounded-lg mb-4 transition-colors duration-300 text-lg">
+            <i class="fas fa-download mr-2"></i> Download Game
+        </a>
+        <script>
+            document.getElementById('download-btn').addEventListener('click', function() {
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check mr-2"></i> Downloaded!';
+                    this.classList.remove('bg-blue-900', 'hover:bg-blue-800');
+                    this.classList.add('bg-green-700', 'hover:bg-green-600');
+                }, 100);
+            });
+        </script>
+
+        <!-- Play Online Button -->
+        <a href="index.html" class="block w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-4 px-6 rounded-lg transition-colors duration-300 text-lg mb-2">
+            <i class="fas fa-play mr-2"></i> Play On Website
+        </a>
+        
+        <!-- Source Code Link -->
+        <div class="text-center mt-4">
+            <a href="#" class="text-yellow-200 hover:text-yellow-300 transition-colors text-sm">
+                <i class="fas fa-code-branch mr-1"></i> sources code
+            </a>
+        </div>
+    </div>
+</body>
+</html>

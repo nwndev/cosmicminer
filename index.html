@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Cosmic Miner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .mining-btn {
+      transition: all 0.2s;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+    .mining-btn:active {
+      transform: scale(0.95);
+    }
+    .mining-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .progress-bar {
+      transition: width 0.1s linear;
+    }
+    .worker-progress {
+      transition: width 0.1s linear;
+    }
+    body {
+      background: linear-gradient(rgba(10, 15, 51, 0.9), rgba(10, 15, 51, 0.9)), 
+                  url('https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg') no-repeat center;
+      background-size: cover;
+      min-height: 100vh;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    html {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    html::-webkit-scrollbar {
+      display: none; /* Chrome/Safari/Opera */
+    }
+
+    /* Disable text selection highlight */
+    ::selection {
+      background: transparent;
+    }
+
+    /* Modal styles */
+    #about-modal, #credits-modal {
+      backdrop-filter: blur(10px);
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    
+    #about-modal.show, #credits-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #about-modal .modal-content, #credits-modal .modal-content {
+      background: rgba(10, 15, 51, 0.9);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      color: #f3f4f6;
+    }
+  </style>
+</head>
+<body class="text-yellow-200 font-mono">
+  <!-- Splash Screen -->
+  <div id="splash-screen" class="fixed inset-0 flex items-center justify-center bg-black z-50 transition-opacity duration-500">
+    <img src="/assets/logo.png" alt="COSMIC MINER" class="h-48 w-auto animate-pulse">
+  </div>
+
+  <!-- Welcome Modal -->
+  <div id="welcome-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-blue-900 rounded-lg p-6 shadow-lg max-w-md w-full mx-4 border-2 border-yellow-400">
+      <h2 class="text-2xl font-bold text-yellow-300 mb-4">Welcome to COSMIC MINER!</h2>
+      <p class="mb-3">Embark on an intergalactic mining adventure!</p>
+      <ul class="list-disc pl-5 mb-4 space-y-1">
+        <li>Click MINE to gather cosmic minerals</li>
+        <li>Upgrade your equipment to mine faster</li>
+        <li>Hire workers to automate mining</li>
+        <li>Sell minerals for coins to buy upgrades</li>
+      </ul>
+      <button id="close-welcome" class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-lg text-lg transition-colors">
+        Start Mining!
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content (initially hidden) -->
+  <div id="main-content" class="container mx-auto px-4 py-8 hidden">
+    <!-- About Modal -->
+    <div id="about-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="bg-blue-900 rounded-lg p-6 shadow-lg max-w-md w-full">
+        <h2 class="text-yellow-300 font-bold mb-4">About</h2>
+        <p class="text-2l">Cosmic Miner is an idle-clicker game where you collect resources and upgrade your equipment to mine more efficiently. Simple as that. Purely created with only HTML, JavaScript and Tailwind CSS.</p>
+        <button id="close-about-modal" class="mt-4 px-4 py-2 bg-yellow-500 text-blue-900 rounded-lg">Close</button>
+      </div>
+    </div>
+
+    <!-- Credits Modal -->
+    <div id="credits-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="bg-blue-900 rounded-lg p-6 shadow-lg max-w-md w-full">
+        <h2 class="text-yellow-300 font-bold mb-4">Credits</h2>
+        <p class="text-2l">This game uses sounds from <a href="https://myinstants.com/" class="hover:text-yellow-300 transition-colors">myinstants.com.</a> Some sounds may originate from video games or other media. I do not own these sounds, and they remain the property of their respective copyright holders.</p>
+        <p class="text-2l mt-2">All sound clips are used under the assumption of fair use for non-commercial purposes. If you are a copyright holder and wish to have a sound removed, please contact me.</p>
+        <p class="text-2l mt-2 text-yellow-300">fernandoyohanes17@gmail.com</p>
+        
+        <button id="close-credits-modal" class="mt-4 px-4 py-2 bg-yellow-500 text-blue-900 rounded-lg">Close</button>
+      </div>
+    </div>
+    <div class="flex justify-center mb-2">
+      <img src="/assets/logo.png" alt="COSMIC MINER" class="h-24 w-auto">
+    </div>
+    <div class="flex justify-center items-center gap-4 mb-6 text-yellow-400 text-sm">
+      <a href="#about" class="hover:text-yellow-300 transition-colors">about <i class="fas fa-info-circle ml-1"></i></a>
+      <span class="text-blue-400">•</span>
+      <a href="#credits" class="hover:text-yellow-300 transition-colors">credits <i class="fas fa-heart ml-1"></i></a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Resources Panel -->
+      <div class="bg-blue-900 bg-opacity-70 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-yellow-400">Resources</h2>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-xl"><i class="fas fa-gem mr-2"></i> Minerals:</span>
+            <div class="flex items-center gap-2">
+              <span id="mining-bonus" class="text-sm opacity-0">+0</span>
+              <span id="minerals" class="text-2xl font-bold">0</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xl"><i class="fas fa-coins mr-2"></i> Coins:</span>
+            <span id="coins" class="text-2xl font-bold">0</span>
+          </div>
+          <div class="pt-4 border-t border-blue-700 space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span><i class="fas fa-hammer mr-1"></i> Minerals/click:</span>
+              <span id="per-click">1~1</span>
+            </div>
+            <div class="flex justify-between">
+              <span><i class="fas fa-tachometer-alt mr-1"></i> Mining speed:</span>
+              <span id="mine-speed">0%</span>
+            </div>
+            <div class="flex justify-between">
+              <span><i class="fas fa-chart-line mr-1"></i> Sell value:</span>
+              <span id="sell-value">100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mining Panel -->
+      <div class="bg-blue-900 bg-opacity-70 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-yellow-400">Mining</h2>
+        <button id="mine-btn" class="mining-btn w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-lg text-xl transition-colors">
+          <i class="fas fa-hammer"></i> MINE
+        </button>
+        <div class="mt-2 h-2 bg-blue-800 rounded-full">
+          <div id="cooldown-bar" class="h-full bg-yellow-500 rounded-full w-0"></div>
+        </div>
+        <p id="cooldown-text" class="text-center mt-1">Ready!</p>
+        
+        <!-- XP Bar -->
+        <div class="mt-4">
+          <div class="flex justify-between text-sm mb-1">
+            <span>LVL <span id="player-level">1</span> <i class="fas fa-star text-yellow-400"></i></span>
+            <span><span id="current-xp">0</span>/<span id="next-level-xp">50</span></span>
+          </div>
+          <div class="h-2 bg-blue-800 rounded-full">
+            <div id="xp-bar" class="h-full bg-yellow-500 rounded-full w-0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sell Panel -->
+      <div class="bg-blue-900 bg-opacity-70 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-yellow-400">Sell</h2>
+          <button id="sell-btn" class="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-lg text-xl">
+            SELL ALL FOR <i class="fas fa-coins"></i> <span id="sell-total">0</span>
+          </button>
+        <div id="auto-sell-container" class="mt-4 hidden">
+          <div class="h-2 bg-blue-800 rounded-full">
+            <div id="auto-sell-bar" class="h-full bg-yellow-500 rounded-full w-0"></div>
+          </div>
+          <p id="auto-sell-text" class="text-center mt-1">Next auto-sell in 3s</p>
+        </div>
+        <div id="save-notification" class="text-center mt-2 opacity-0 transition-opacity duration-500">
+          <span class="text-green-400"><i class="fas fa-check-circle mr-1"></i> Game Saved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upgrades Section -->
+    <div class="mt-8 bg-blue-900 bg-opacity-70 p-6 rounded-lg">
+      <h2 class="text-2xl font-bold mb-4 text-yellow-400">Upgrades</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="upgrade-card">
+          <h3 class="text-xl font-bold"><i class="fas fa-hammer mr-2"></i> Pickaxe <span class="level-badge bg-yellow-500 text-blue-900 text-sm font-bold px-2 py-0.5 rounded-full">0</span></h3>
+          <p>Increases minerals per click</p>
+        <button class="upgrade-btn mt-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-full transition-colors flex items-center gap-2" data-type="pickaxe">
+            <i class="fas fa-level-up-alt"></i> Upgrade (<span class="cost">10</span> <i class="fas fa-coins"></i>)
+        </button>
+        </div>
+        <div class="upgrade-card">
+          <h3 class="text-xl font-bold"><i class="fas fa-bolt mr-2"></i> Mine Speed <span class="level-badge bg-yellow-500 text-blue-900 text-sm font-bold px-2 py-0.5 rounded-full">0</span></h3>
+          <p>Increases mining speed by 9%</p>
+        <button class="upgrade-btn mt-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-full transition-colors flex items-center gap-2" data-type="cooldown">
+            <i class="fas fa-level-up-alt"></i> Upgrade (<span class="cost">50</span> <i class="fas fa-coins"></i>)
+        </button>
+        </div>
+        <div class="upgrade-card">
+          <h3 class="text-xl font-bold"><i class="fas fa-chart-line mr-2"></i> Market Value <span class="level-badge bg-yellow-500 text-blue-900 text-sm font-bold px-2 py-0.5 rounded-full">0</span></h3>
+          <p>Increases sell value by 10%</p>
+          <button class="upgrade-btn mt-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-full transition-colors flex items-center gap-2" data-type="market">
+            <i class="fas fa-level-up-alt"></i> Upgrade (<span class="cost">75</span> <i class="fas fa-coins"></i>)
+          </button>
+        </div>
+        <div class="upgrade-card">
+          <h3 class="text-xl font-bold"><i class="fas fa-hard-hat"></i> Worker <span class="level-badge bg-yellow-500 text-blue-900 text-sm font-bold px-2 py-0.5 rounded-full">0/3</span></h3>
+          <p>Hire a new worker that automatically mines for you every few seconds</p>
+          <button class="upgrade-btn mt-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-full transition-colors flex items-center gap-2" data-type="worker">
+            <i class="fas fa-level-up-alt"></i> Hire (<span class="cost">100</span> <i class="fas fa-coins"></i>)
+          </button>
+        </div>
+        <div class="upgrade-card">
+          <h3 class="text-xl font-bold"><i class="fas fa-box-open"></i> Storage <span class="level-badge bg-yellow-500 text-blue-900 text-sm font-bold px-2 py-0.5 rounded-full">0</span></h3>
+          <p>Increase worker mineral storage capacity</p>
+          <button class="upgrade-btn mt-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-full transition-colors flex items-center gap-2" data-type="workerCap">
+            <i class="fas fa-level-up-alt"></i> Upgrade (<span class="cost">200</span> <i class="fas fa-coins"></i>)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workers Section -->
+  <div class="container mx-auto px-4">
+    <div class="mt-8 bg-blue-900 bg-opacity-70 p-6 rounded-lg">
+      <h2 class="text-2xl font-bold mb-4 text-yellow-400">Workers</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="worker-slot bg-blue-800 bg-opacity-50 p-4 rounded-lg border-2 border-dashed border-blue-600">
+          <div class="worker-content hidden">
+            <div class="flex justify-center mb-2">
+              <i class="fas fa-hard-hat text-2xl text-yellow-400"></i>
+            </div>
+            <div class="h-2 bg-blue-700 rounded-full mb-1">
+              <div class="worker-progress h-full bg-yellow-500 rounded-full w-0 transition-all duration-300 ease-linear"></div>
+            </div>
+            <div class="text-xs text-center text-yellow-400 countdown-timer">3.0s</div>
+          </div>
+          <div class="empty-slot text-center">
+            <i class="fas fa-user-plus text-3xl text-blue-400 mb-2"></i>
+            <p class="text-sm">Empty Slot</p>
+          </div>
+        </div>
+        <div class="worker-slot bg-blue-800 bg-opacity-50 p-4 rounded-lg border-2 border-dashed border-blue-600">
+          <div class="worker-content hidden">
+            <div class="flex justify-center mb-2">
+              <i class="fas fa-hard-hat text-2xl text-yellow-400"></i>
+            </div>
+            <div class="h-2 bg-blue-700 rounded-full mb-1">
+              <div class="worker-progress h-full bg-yellow-500 rounded-full w-0 transition-all duration-300 ease-linear"></div>
+            </div>
+            <div class="text-xs text-center text-yellow-400 countdown-timer">3.0s</div>
+          </div>
+          <div class="empty-slot text-center">
+            <i class="fas fa-user-plus text-3xl text-blue-400 mb-2"></i>
+            <p class="text-sm">Empty Slot</p>
+          </div>
+        </div>
+        <div class="worker-slot bg-blue-800 bg-opacity-50 p-4 rounded-lg border-2 border-dashed border-blue-600">
+          <div class="worker-content hidden">
+            <div class="flex justify-center mb-2">
+              <i class="fas fa-hard-hat text-2xl text-yellow-400"></i>
+            </div>
+            <div class="h-2 bg-blue-700 rounded-full mb-1">
+              <div class="worker-progress h-full bg-yellow-500 rounded-full w-0 transition-all duration-300 ease-linear"></div>
+            </div>
+            <div class="text-xs text-center text-yellow-400 countdown-timer">3.0s</div>
+          </div>
+          <div class="empty-slot text-center">
+            <i class="fas fa-user-plus text-3xl text-blue-400 mb-2"></i>
+            <p class="text-sm">Empty Slot</p>
+          </div>
+        </div>
+      </div>
+      <div id="worker-resources-container" class="mt-4 text-center hidden">
+        <div class="flex justify-center items-center mb-2">
+          <i class="fas fa-gem mr-2 text-xl"></i>
+          <span id="worker-minerals" class="text-2xl font-bold text-yellow-300">0</span>
+          <span class="mx-1 text-lg">/</span>
+          <span id="worker-mineral-cap" class="text-2xl font-bold text-blue-400">150</span>
+        </div>
+        <button id="gather-all-btn" class="w-full py-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold rounded-lg text-lg">
+          <i class="fas fa-box"></i> GATHER ALL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="container mx-auto px-4 mt-8 text-center text-blue-300 text-sm pb-8">
+    Created with <i class="fas fa-heart text-red-400"></i> by yoyo
+  </div>
+
+  <!-- Floating coins container -->
+  <div id="floating-coins" class="fixed top-4 left-1/2 -translate-x-1/2 bg-blue-900/30 backdrop-blur-md px-4 py-2 rounded-full text-yellow-200 text-xl font-bold opacity-0 transition-all duration-300 ease-out border border-blue-400/30">
+    <i class="fas fa-coins mr-2"></i>
+    <span id="floating-coins-display">0</span>
+    <i class="fas fa-gem mr-2"></i>
+    <span id="floating-minerals-display">0</span>
+  </div>
+
+  <script src="script.js"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Mobile responsive splash screen */
+    @media (max-width: 640px) {
+      #splash-screen img {
+        height: auto !important;
+        width: 60vw !important;
+        max-width: 200px;
+        object-fit: contain;
+      }
+    }
+  </style>
+</body>
